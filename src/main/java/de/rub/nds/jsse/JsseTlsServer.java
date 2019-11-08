@@ -116,6 +116,7 @@ public class JsseTlsServer {
         try {
             preSetup();
             closed = false;
+            ((SSLServerSocket) serverSocket).setNeedClientAuth(true);
             while (!shutdown) {
                 try {
                     LOGGER.info("Listening on port " + port + "...\n");
