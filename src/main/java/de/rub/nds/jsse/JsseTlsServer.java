@@ -3,6 +3,7 @@ package de.rub.nds.jsse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
+import javax.net.ssl.SSLServerSocket
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.KeyManagementException;
