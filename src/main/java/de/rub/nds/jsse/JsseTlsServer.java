@@ -157,7 +157,6 @@ public class JsseTlsServer {
             while (!shutdown) {
                 try {
                     LOGGER.info("Listening on port " + port + "...\n");
-                    System.out.println("Accepting Client!");
                     final Socket socket = serverSocket.accept();
                     if (socket != null) {
                         ConnectionHandler ch = new ConnectionHandler(socket);
