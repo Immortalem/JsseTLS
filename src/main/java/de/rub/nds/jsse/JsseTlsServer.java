@@ -37,10 +37,6 @@ public class JsseTlsServer {
     private ServerSocket serverSocket;
     private boolean shutdown;
     boolean closed = true;
-    private static final String PATH_TO_JKS = "rsa2048.jks";
-    private static final String JKS_PASSWORD = "password";
-    private static final String ALIAS = "1";
-    private static final int PORT = 4433;
     private final int port;
 
     /**
@@ -48,53 +44,22 @@ public class JsseTlsServer {
      */
     private volatile boolean initialized;
 
-    public JsseTlsServer(KeyStore keyStore, String password, String protocol, int port) throws KeyStoreException,
+    public JsseTlsServer(KeyStore serverKeyStore, KeyStore caKeyStore, String password, String protocol, int port) throws KeyStoreException,
             IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException,
             KeyManagementException {
 
         this.port = port;
 
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, password.toCharArray());
-        KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
+        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("SunX509");
+        serverKmf.init(serverKeyStore, password.toCharArray());
+        KeyManager[] keyManagers = serverKmf.getKeyManagers();
 
         TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-        trustManagerFactory.init(keyStore);
+        trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+
         sslContext = SSLContext.getInstance(protocol);
-        sslContext.init(keyManagers,  new TrustManager[]{new X509ExtendedTrustManager() {
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
-                    // never called
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
-                }
-
-              
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[]{};
-                }
-            }}, new SecureRandom());
+        sslContext.init(keyManagers, trustManagers,  new SecureRandom());
 
         cipherSuites = sslContext.getServerSocketFactory().getSupportedCipherSuites();
 
@@ -110,42 +75,30 @@ public class JsseTlsServer {
     
     public static void main(String[] args) throws Exception {
         System.setProperty("java.security.debug", "ssl");
-        String path, ecPath = null;
-        String password, ecPassword = null;
-        String alias, ecAlias = null;
-        boolean useBouncyCastleProvider = false;
+        String serverKsPath, caKsPath = null;
+        String password = null;
         int port;
 
         switch (args.length) {
-            case 5:
             case 4:
                 port = Integer.parseInt(args[0]);
-                path = args[1];
-                password = args[2];
-                alias = args[3];
-                if(args.length == 5 && args[4].equalsIgnoreCase("BC")) {
-                    useBouncyCastleProvider = true;
-                }
-                break;
-            case 0:
-                path = PATH_TO_JKS;
-                password = JKS_PASSWORD;
-                alias = ALIAS;
-                port = PORT;
+                serverKsPath = args[1];
+                caKsPath = args[2];
+                password = args[3];
                 break;
             default:
-                System.out.println("Usage (run with): java -jar [name].jar [port] [jks-path] "
-                        + "[password] [alias] [BC]");
+                System.out.println("Usage (run with): java -jar [name].jar [port] [server-jks-path] "
+                        + "[ca-jks-path] [password]");
                 return;
         }
-        
-        if(useBouncyCastleProvider) {
-            Provider provider = new BouncyCastleProvider();
-            Security.insertProviderAt(provider, 1);
-        }
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(new FileInputStream(path), password.toCharArray());
-        JsseTlsServer tlsServer = new JsseTlsServer(ks, password, "TLS", port);
+
+        KeyStore serverKs = KeyStore.getInstance("JKS");
+        serverKs.load(new FileInputStream(serverKsPath), password.toCharArray());
+
+        KeyStore caKs = KeyStore.getInstance("JKS");
+        caKs.load(new FileInputStream(caKsPath), password.toCharArray());
+
+        JsseTlsServer tlsServer = new JsseTlsServer(serverKs, caKs, password, "TLS", port);
         tlsServer.start();
     }
 
