@@ -6,12 +6,7 @@ import java.net.ServerSocket;
 import javax.net.ssl.SSLServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -21,7 +16,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-    
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 public class JsseTlsServer {
 
     private static final Logger LOGGER = LogManager.getLogger(JsseTlsServer.class);
@@ -71,18 +67,29 @@ public class JsseTlsServer {
         String serverKsPath, caKsPath = null;
         String password = null;
         int port;
+        boolean useBouncyCastleProvider = false;
+
 
         switch (args.length) {
+            case 5:
             case 4:
                 port = Integer.parseInt(args[0]);
                 serverKsPath = args[1];
                 caKsPath = args[2];
                 password = args[3];
+                if(args.length == 5 && args[4].equalsIgnoreCase("BC")) {
+                    useBouncyCastleProvider = true;
+                }
                 break;
             default:
                 System.out.println("Usage (run with): java -jar [name].jar [port] [server-jks-path] "
                         + "[ca-jks-path] [password]");
                 return;
+        }
+
+        if(useBouncyCastleProvider) {
+            Provider provider = new BouncyCastleProvider();
+            Security.insertProviderAt(provider, 1);
         }
 
         KeyStore serverKs = KeyStore.getInstance("JKS");
