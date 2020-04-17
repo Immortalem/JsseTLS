@@ -89,7 +89,7 @@ public class JsseTlsServer {
 
         if(useBouncyCastleProvider) {
             Provider provider = new BouncyCastleProvider();
-            Security.insertProviderAt(provider, 1);
+            Security.insertProviderAt(provider, 0);
         }
 
         KeyStore serverKs = KeyStore.getInstance("JKS");
