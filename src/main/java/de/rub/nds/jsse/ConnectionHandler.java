@@ -26,19 +26,11 @@ public class ConnectionHandler implements Runnable {
     public void run() {
 
         LOGGER.debug("new Thread started");
-
-        try {
-            InputStream in = applicationSocket.getInputStream();
-            OutputStream out = applicationSocket.getOutputStream();
-            out.write(Strings.toByteArray("Hello"));
-        } catch (IOException e) {
-            LOGGER.debug(e.getLocalizedMessage(), e);
-        } finally {
             try {
                 applicationSocket.close();
             } catch (final IOException ioe) {
                 LOGGER.debug(ioe.getLocalizedMessage(), ioe);
             }
-        }
+        
     }
 }
