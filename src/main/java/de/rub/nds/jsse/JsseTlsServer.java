@@ -16,7 +16,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
 public class JsseTlsServer {
@@ -39,11 +38,11 @@ public class JsseTlsServer {
 
         this.port = port;
 
-        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("SunX509");
+        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
         serverKmf.init(serverKeyStore, password.toCharArray());
         KeyManager[] keyManagers = serverKmf.getKeyManagers();
 
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
         trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
