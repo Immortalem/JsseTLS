@@ -35,7 +35,7 @@ public class JsseTlsServer {
     private volatile boolean initialized;
 
     public JsseTlsServer(KeyStore serverKeyStore, KeyStore caKeyStore, String password, String protocol, int port) throws KeyStoreException,
-            NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+            NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException, NoSuchProviderException {
 
         this.port = port;
 
@@ -47,7 +47,7 @@ public class JsseTlsServer {
         trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
-        sslContext = SSLContext.getInstance(protocol);
+        sslContext = SSLContext.getInstance(protocol, "BCJSSE");
         sslContext.init(keyManagers, trustManagers,  new SecureRandom());
 
         cipherSuites = sslContext.getServerSocketFactory().getSupportedCipherSuites();
@@ -87,10 +87,10 @@ public class JsseTlsServer {
                 return;
         }
 
-//        if(useBouncyCastleProvider) {
-//            Provider provider = new BouncyCastleJsseProvider();
-//            Security.addProvider(provider);
-//        }
+        if(useBouncyCastleProvider) {
+            Provider provider = new BouncyCastleJsseProvider();
+            Security.addProvider(provider);
+        }
 
         KeyStore serverKs = KeyStore.getInstance("JKS");
         serverKs.load(new FileInputStream(serverKsPath), password.toCharArray());
