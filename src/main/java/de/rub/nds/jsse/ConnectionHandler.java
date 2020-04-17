@@ -45,7 +45,7 @@ public class ConnectionHandler implements Runnable {
             try {
                 applicationSocket.close();
             } catch (final IOException ioe) {
-                LOGGER.debug(ioe.getLocalizedMessage(), ioe);
+                LOGGER.debug("Error closing socket" + ioe.getLocalizedMessage(), ioe);
             }
         }
     }
