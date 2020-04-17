@@ -1,13 +1,10 @@
 package de.rub.nds.jsse;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.util.Strings;
 
 public class ConnectionHandler implements Runnable {
 
@@ -31,14 +28,9 @@ public class ConnectionHandler implements Runnable {
         LOGGER.debug("new Thread started");
 
         try {
-            final BufferedReader br = new BufferedReader(new InputStreamReader(applicationSocket.getInputStream()));
-            final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(applicationSocket.getOutputStream()));
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                LOGGER.debug(line);
-                bw.write("ack");
-                bw.flush();
-            }
+            InputStream in = applicationSocket.getInputStream();
+            OutputStream out = applicationSocket.getOutputStream();
+            out.write(Strings.toByteArray("Hello"));
         } catch (IOException e) {
             LOGGER.debug(e.getLocalizedMessage(), e);
         } finally {
