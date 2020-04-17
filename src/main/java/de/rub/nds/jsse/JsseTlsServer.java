@@ -47,7 +47,7 @@ public class JsseTlsServer {
         trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
-        sslContext = SSLContext.getInstance(protocol, "BCJSSE");
+        sslContext = SSLContext.getInstance(protocol, "BC");
         sslContext.init(keyManagers, trustManagers,  new SecureRandom());
 
         cipherSuites = sslContext.getServerSocketFactory().getSupportedCipherSuites();
