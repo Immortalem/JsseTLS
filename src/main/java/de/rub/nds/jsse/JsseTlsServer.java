@@ -34,7 +34,8 @@ public class JsseTlsServer {
     private volatile boolean initialized;
 
     public JsseTlsServer(KeyStore serverKeyStore, KeyStore caKeyStore, String password, String protocol, int port) throws KeyStoreException,
-            NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException, NoSuchProviderException {
+            NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException, NoSuchProviderException,
+            IOException, SocketException{
 
         this.port = port;
 
