@@ -17,6 +17,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
 public class JsseTlsServer {
 
@@ -47,7 +48,7 @@ public class JsseTlsServer {
         trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
-        sslContext = SSLContext.getInstance(protocol, "BC");
+        sslContext = SSLContext.getInstance(protocol, "BCJSSE");
         sslContext.init(keyManagers, trustManagers,  new SecureRandom());
 
         cipherSuites = sslContext.getServerSocketFactory().getSupportedCipherSuites();
@@ -88,8 +89,8 @@ public class JsseTlsServer {
         }
 
         if(useBouncyCastleProvider) {
-            Provider provider = new BouncyCastleProvider();
-            Security.insertProviderAt(provider, 0);
+            Provider provider = new BouncyCastleJsseProvider();
+            Security.addProvider(provider);
         }
 
         KeyStore serverKs = KeyStore.getInstance("JKS");
