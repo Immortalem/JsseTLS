@@ -39,11 +39,11 @@ public class JsseTlsServer {
 
         this.port = port;
 
-        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("SunX509");
+        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
         serverKmf.init(serverKeyStore, password.toCharArray());
         KeyManager[] keyManagers = serverKmf.getKeyManagers();
 
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
         trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
