@@ -39,7 +39,7 @@ public class JsseTlsServer {
 
         this.port = port;
 
-        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+        KeyManagerFactory serverKmf = KeyManagerFactory.getInstance("SunX509");
         serverKmf.init(serverKeyStore, password.toCharArray());
         KeyManager[] keyManagers = serverKmf.getKeyManagers();
 
@@ -47,8 +47,8 @@ public class JsseTlsServer {
         trustManagerFactory.init(caKeyStore);
         TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
-        sslContext = SSLContext.getInstance(protocol, "BCJSSE");
-        sslContext.init(keyManagers, trustManagers,  null);
+        sslContext = SSLContext.getInstance(protocol, new BouncyCastleJsseProvider());
+        sslContext.init(keyManagers, trustManagers,  SecureRandom.getInstance("NativePRNGNonBlocking"));
 
         cipherSuites = sslContext.getServerSocketFactory().getSupportedCipherSuites();
 
