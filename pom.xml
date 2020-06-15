@@ -28,6 +28,11 @@
             <artifactId>bctls-jdk15on</artifactId>
             <version>${bc.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${bc.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

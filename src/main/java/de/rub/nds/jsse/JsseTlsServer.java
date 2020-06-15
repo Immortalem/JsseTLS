@@ -17,6 +17,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class JsseTlsServer {
 
@@ -63,6 +64,7 @@ public class JsseTlsServer {
     }
     
     public static void main(String[] args) throws Exception {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
         System.setProperty("java.security.debug", "ssl");
         String serverKsPath, caKsPath = null;
         String password = null;
